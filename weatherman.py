@@ -3,41 +3,40 @@ import calendar
 from datetime import datetime
 import os
 
-
 RED = "\033[31m"
 BLUE = "\033[34m"
 RESET = "\033[0m"
 
 
 class WeatherReading:
-
     def __init__(self, observation_date, max_temp, min_temp, max_humidity, mean_humidity):
         self.date = observation_date
         self.max_temp = max_temp
         self.min_temp = min_temp
         self.max_humidity = max_humidity
         self.mean_humidity = mean_humidity
-
+                                                                                                   
     def __repr__(self):
-        return (f"WeatherReading(date={self.date}, max_temp={self.max_temp}, min_temp={self.min_temp}, "
+        return (f"WeatherReading(date={self.date}, max_temp={self.max_temp}, min_temp={self.min_temp},"
                 f"max_humidity={self.max_humidity}, mean_humidity={self.mean_humidity})")
 
-    
+
 def parse_weather_file(file_path):
     readings = []
     try:
         with open(file_path, 'r') as file:
-            header = next(file).strip().split(',')
-            required_fields = ["PKT", "Max TemperatureC", "Min TemperatureC", "Max Humidity", " Mean Humidity"]
+            header = [item.strip() for item in next(file).strip().split(',')]
+            required_fields = [
+                "PKT", "Max TemperatureC", "Min TemperatureC", "Max Humidity", "Mean Humidity"]
             field_indices = {field: header.index(field) for field in required_fields}
-            
+
             for line in file:
                 parts = line.strip().split(',')
                 try:
                     selected_fields = {field: parts[field_indices[field]] for field in required_fields}
                 except IndexError:
                     continue
-                
+
                 if '' in selected_fields.values():
                     continue
 
@@ -45,7 +44,7 @@ def parse_weather_file(file_path):
                 max_temp = float(selected_fields["Max TemperatureC"])
                 min_temp = float(selected_fields["Min TemperatureC"])
                 max_humidity = float(selected_fields["Max Humidity"])
-                mean_humidity = float(selected_fields[" Mean Humidity"])
+                mean_humidity = float(selected_fields["Mean Humidity"])
                 reading = WeatherReading(obs_date, max_temp, min_temp, max_humidity, mean_humidity)
                 readings.append(reading)
     except FileNotFoundError:
@@ -54,7 +53,6 @@ def parse_weather_file(file_path):
 
 
 class WeatherCalculations:
-
     def __init__(self):
         self.highest_temp = None
         self.lowest_temp = None
@@ -87,7 +85,7 @@ class WeatherCalculations:
         avg_min_temp = self.total_min_temp / self.num_readings
         avg_mean_humidity = self.total_mean_humidity / self.num_readings
         return avg_max_temp, avg_min_temp, avg_mean_humidity
-    
+
 
 def read_yearly_data(directory, year):
     calculations = WeatherCalculations()
@@ -147,7 +145,7 @@ def generate_monthly_bar_chart(readings, combined):
                 print(f"{day} {high_bar} {reading.max_temp}C")
                 print(f"{day} {low_bar} {reading.min_temp}C")
 
-
+                                                                               
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", type=str)
@@ -174,6 +172,7 @@ def main():
         print(f"Reading columnar data for {year}/{month}:")
         monthly_readings = read_monthly_column_data(args.directory, year, month)
         generate_monthly_bar_chart(monthly_readings, combined=False)
+
 
 if __name__ == "__main__":
     main()
