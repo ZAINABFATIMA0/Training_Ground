@@ -23,13 +23,13 @@ def main():
     if args.a:
         year, month = map(int, args.a.split('/'))
         print(f"Reading data for {year}/{month}:")
-        monthly_calculations = data_reader.read_monthly_data(year, month)
+        monthly_calculations = data_reader.read_monthly_readings(year, month)
         weather_report.generate_monthly_report(monthly_calculations)
 
     if args.c:
         year, month = map(int, args.c.split('/'))
         print(f"Reading columnar data for {year}/{month}:")
-        monthly_readings = data_reader.read_monthly_column_data(year, month)
+        monthly_readings = data_reader.read_monthly_column_readings(year, month)
         weather_report.generate_monthly_bar_chart(monthly_readings, combined=True)
 
 if __name__ == "__main__":

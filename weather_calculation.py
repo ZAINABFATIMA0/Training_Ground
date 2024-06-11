@@ -1,5 +1,7 @@
 class WeatherCalculations:
+
     def update_calculations(self, reading):
+
         if not hasattr(self, "num_readings"):
             self.highest_temp = self.lowest_temp = self.highest_humidity = reading
             self.total_max_temp = reading.max_temp
