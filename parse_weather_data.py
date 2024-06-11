@@ -10,14 +10,14 @@ class WeatherParser:
         try:
             with open(file_path, 'r') as weather_file:
                 csv_weather_file = csv.reader(weather_file)
-                weather_readings = self._assign_values(csv_weather_file)
+                weather_readings = self.assign_values(csv_weather_file)
         except FileNotFoundError:
             print(f"File not found: {file_path}")
         except ValueError as e:
             print(e)
         return weather_readings
 
-    def _read_header(self, csv_weather_file):
+    def read_header(self, csv_weather_file):
         header = [header.strip() for header in next(csv_weather_file)]
         alternative_keys = [("PKT", "PKST"), "Max TemperatureC", "Min TemperatureC", "Max Humidity", "Mean Humidity"]
 
@@ -38,9 +38,9 @@ class WeatherParser:
         field_indices = {self.actual_keys[key]: header.index(self.actual_keys[key]) for key in self.actual_keys}
         return field_indices
         
-    def _assign_values(self, csv_weather_file):
+    def assign_values(self, csv_weather_file):
         weather_reading = []
-        field_indices = self._read_header(csv_weather_file)
+        field_indices = self.read_header(csv_weather_file)
         next(csv_weather_file) 
         for weather_record in csv_weather_file:
             try:
