@@ -57,5 +57,4 @@ class WeatherCalculations:
         avg_max_temperature = self.total_max_temperature / self.num_readings
         avg_min_temperature = self.total_min_temperature / self.num_readings
         avg_mean_humidity = self.total_mean_humidity / self.num_readings
-        print(type(avg_max_temperature))
         return avg_max_temperature, avg_min_temperature, avg_mean_humidity

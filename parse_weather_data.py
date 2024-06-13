@@ -89,7 +89,6 @@ class WeatherParser:
         """
         weather_readings = []
         weather_field_indices = self.read_header(weather_file)
-        next(weather_file) 
 
         for weather_record in weather_file:
             try:
