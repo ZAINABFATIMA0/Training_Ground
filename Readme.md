@@ -13,7 +13,8 @@ Weather Man is a Python application that generates reports from weather data fil
 
 1. Ensure you have Python 3.8.10 installed on your system.
 
-2. Clone or download the repository from [git@github.com:ZAINABFATIMA0/Training_Ground.git].
+2. Clone or download the repository from [git@github.com:ZAINABFATIMA0/Training_Ground.git](git@github.com:ZAINABFATIMA0/Training_Ground.git).
+
 
 ## Usage
 
