@@ -4,6 +4,9 @@ from weather_matrix_reader import WeatherDataReader
 from weather_report import WeatherReport
 
 def main():
+    """
+    Main function to handle command-line arguments and generate weather reports accordingly.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", type=str)
     parser.add_argument("-e", type=int)
