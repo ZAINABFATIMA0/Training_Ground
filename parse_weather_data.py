@@ -4,56 +4,74 @@ from weather_reading import WeatherReading
 
 class WeatherParser:
 
-    actual_keys = {}
+    selected_weather_attributes = {}
 
     def parse_weather_file(self, file_path):
+        weather_readings = []  
+
         try:
             with open(file_path, 'r') as weather_file:
-                csv_weather_file = csv.reader(weather_file)
-                weather_readings = self.assign_values(csv_weather_file)
+                weather_file = csv.reader(weather_file)
+                weather_readings = self.assign_values(weather_file)
         except FileNotFoundError:
             print(f"File not found: {file_path}")
         except ValueError as e:
             print(e)
         return weather_readings
 
-    def read_header(self, csv_weather_file):
-        header = [header.strip() for header in next(csv_weather_file)]
-        alternative_keys = [("PKT", "PKST"), "Max TemperatureC", "Min TemperatureC", "Max Humidity", "Mean Humidity"]
+    def read_header(self, weather_file):
+        header = [header.strip() for header in next(weather_file)]
+        alternative_weather_attributes = [
+            ("PKT", "PKST"), "Max TemperatureC", "Min TemperatureC", "Max Humidity", "Mean Humidity"
+            ]
 
-        for key in alternative_keys:
-            if isinstance(key, tuple):
-                for value in key:
-                    if value not in header:
+        for weather_attribute in alternative_weather_attributes:
+            if isinstance(weather_attribute, tuple):
+                for selected_attribute in weather_attribute:
+                    if selected_attribute not in header:
                         continue
-                    elif(value in header):
-                        self.actual_keys[key] = value
+                    elif(selected_attribute in header):
+                        self.selected_weather_attributes[weather_attribute] = selected_attribute
                     else:
-                        raise ValueError(f"None of the alternative keys {key} found in the header")
+                        raise ValueError(
+                            f"None of the alternative weather attributes {weather_attribute} found in the header"
+                        )
             else:
-                if key not in header:
-                    raise ValueError(f"Required field {key} not found in the header")
-                self.actual_keys[key] = key
+                if weather_attribute not in header:
+                    raise ValueError(f"Required attribue {weather_attribute} not found in the header")
+                self.selected_weather_attributes[weather_attribute] = weather_attribute
 
-        field_indices = {self.actual_keys[key]: header.index(self.actual_keys[key]) for key in self.actual_keys}
-        return field_indices
+        weather_field_indices = {
+            self.selected_weather_attributes[key]: header.index(self.selected_weather_attributes[key])
+            for key in self.selected_weather_attributes
+        }
+
+        return weather_field_indices
         
-    def assign_values(self, csv_weather_file):
+    def assign_values(self, weather_file):
         weather_reading = []
-        field_indices = self.read_header(csv_weather_file)
-        next(csv_weather_file) 
-        for weather_record in csv_weather_file:
+        weather_field_indices = self.read_header(weather_file)
+        next(weather_file) 
+
+        for weather_record in weather_file:
             try:
-                selected_fields = {self.actual_keys[key]: weather_record[field_indices[self.actual_keys[key]]] for key in self.actual_keys}
+                selected_fields = {
+                    self.selected_weather_attributes[key]: weather_record[weather_field_indices
+                    [self.selected_weather_attributes[key]]] for key in self.selected_weather_attributes
+                }
             except IndexError:
                 continue
             if '' in selected_fields.values():
                 continue
-            obs_date = selected_fields[self.actual_keys[("PKT", "PKST")]]
-            max_temp = float(selected_fields["Max TemperatureC"])
-            min_temp = float(selected_fields["Min TemperatureC"])
+            
+            observation_date = selected_fields[self.selected_weather_attributes[("PKT", "PKST")]]
+            max_temperature = float(selected_fields["Max TemperatureC"])
+            min_temperature = float(selected_fields["Min TemperatureC"])
             max_humidity = float(selected_fields["Max Humidity"])
             mean_humidity = float(selected_fields["Mean Humidity"])
-            weatherreadings = WeatherReading(obs_date, max_temp, min_temp, max_humidity, mean_humidity)
+            weatherreadings = WeatherReading(
+                observation_date, max_temperature, min_temperature, max_humidity, mean_humidity
+            )
             weather_reading.append(weatherreadings)
+
         return(weather_reading)
