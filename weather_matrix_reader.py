@@ -13,7 +13,8 @@ class WeatherDataReader:
         directory (str): Directory path where weather data files are located.
         parser (WeatherParser): Instance of WeatherParser used to parse weather data files.
         file_path (str): Template file path for weather data files.
-        weather_stats (WeatherCalculations or None): Instance of WeatherCalculations storing weather statistics.
+        weather_stats (WeatherCalculations or None): 
+            Instance of WeatherCalculations storing weather statistics.
     """
 
     def __init__(self, directory):
@@ -56,7 +57,8 @@ class WeatherDataReader:
             month (int): Month (as integer) of the weather data to be read.
 
         Returns:
-            WeatherCalculations or None: Instance of WeatherCalculations with calculated statistics for the month.
+            WeatherCalculations or None: 
+                Instance of WeatherCalculations with calculated statistics for the month.
         """
         self.weather_stats = WeatherCalculations()
         self.read_weather_matrix(self.file_path.format(
@@ -96,7 +98,8 @@ class WeatherDataReader:
             year (int): Year of the weather data to be read.
 
         Returns:
-            WeatherCalculations or None: Instance of WeatherCalculations with calculated statistics for the year.
+            WeatherCalculations or None: 
+                Instance of WeatherCalculations with calculated statistics for the year.
         """
         self.weather_stats = WeatherCalculations() 
         for month in calendar.month_abbr:

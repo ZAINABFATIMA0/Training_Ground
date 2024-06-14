@@ -27,6 +27,7 @@ def main():
         year = args.e
         print(f"Reading all files for the year {year}:")
         yearly_calculations = data_reader.read_yearly_data(year)
+        
         if yearly_calculations is not None:
             weather_report.generate_yearly_report(yearly_calculations)
         else:
@@ -34,6 +35,7 @@ def main():
 
     if args.a:
         year, month = map(int, args.a.split('/'))
+
         if not validate_month(month):
             print(f"Error: Month index is out of range for argument 'a'. "
                   f"Please provide a month number between 1 and 12.")
@@ -46,10 +48,11 @@ def main():
                 else:
                     print("No data available for the specified month.")
             except IndexError as e:
-                print(f"Error reading data: {e}")
+                    print(f"Error reading data: {e}")
 
     if args.c:
         year, month = map(int, args.c.split('/'))
+
         if not validate_month(month):
             print(f"Error: Month index is out of range for argument 'c'. "
                   f"Please provide a month number between 1 and 12.")
