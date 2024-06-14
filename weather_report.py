@@ -18,10 +18,13 @@ class WeatherReport:
         Generate a yearly weather report based on provided statistics.
 
         Args:
-            weather_stats (WeatherCalculations): Instance of WeatherCalculations containing yearly weather statistics.
+            weather_stats (WeatherCalculations): 
+                Instance of WeatherCalculations containing yearly weather statistics.
         """
-        if (weather_stats.highest_temperature_record and weather_stats.lowest_temperature_record 
-            and weather_stats.highest_humidity_record):
+        if (weather_stats.highest_temperature_record and 
+            weather_stats.lowest_temperature_record and 
+            weather_stats.highest_humidity_record
+        ):
             
             print(f"Highest: {weather_stats.highest_temperature_record.max_temperature}C on "
                   f"{weather_stats.highest_temperature_record.observation_date}")
@@ -37,7 +40,8 @@ class WeatherReport:
         Generate a monthly weather report based on provided statistics.
 
         Args:
-            weather_stats (WeatherCalculations): Instance of WeatherCalculations containing monthly weather statistics.
+            weather_stats (WeatherCalculations): 
+                Instance of WeatherCalculations containing monthly weather statistics.
         """
         if not weather_stats:
             return
@@ -56,8 +60,10 @@ class WeatherReport:
         Generate a monthly bar chart based on daily temperature readings.
 
         Args:
-            monthly_temperature_readings (list): List of WeatherReading objects representing daily temperature readings.
-            combined_bar_charts (bool): Flag indicating whether to combine high and low temperature bars.
+            monthly_temperature_readings (list): 
+                List of WeatherReading objects representing daily temperature readings.
+            combined_bar_charts (bool): 
+                Flag indicating whether to combine high and low temperature bars.
 
         """
         if not monthly_temperature_readings:

@@ -25,7 +25,9 @@ class WeatherDataReader:
         """
         self.directory = directory
         self.parser = WeatherParser()
-        self.file_path = os.path.join(self.directory, "Murree_weather_{year}_{month}.txt")
+        self.file_path = os.path.join(
+            self.directory, "Murree_weather_{year}_{month}.txt"
+            )
 
     def read_weather_matrix(self, file_path):
         """
@@ -57,7 +59,10 @@ class WeatherDataReader:
             WeatherCalculations or None: Instance of WeatherCalculations with calculated statistics for the month.
         """
         self.weather_stats = WeatherCalculations()
-        self.read_weather_matrix(self.file_path.format(year=year, month=calendar.month_abbr[month]))
+        self.read_weather_matrix(self.file_path.format(
+            year = year, month = calendar.month_abbr[month]
+            )
+        )
         return self.weather_stats
         
     def read_monthly_column_readings(self, year, month):
@@ -71,8 +76,18 @@ class WeatherDataReader:
         Returns:
             list: List of WeatherReading objects parsed from the file.
         """
-        return self.parser.parse_weather_file(self.file_path.format(year=year, month=calendar.month_abbr[month]))
-    
+        file_path = self.file_path.format(
+                        year = year, month = calendar.month_abbr[month]
+                        )
+        try:
+            if os.path.exists(file_path):
+                return self.parser.parse_weather_file(file_path)
+            else:
+                print(f"File not found: {file_path}")
+        except Exception as e:
+                print(f"Error reading file {file_path}: {e}")
+
+        
     def read_yearly_data(self, year):
         """
         Read and process weather data for the entire year.
@@ -85,7 +100,10 @@ class WeatherDataReader:
         """
         self.weather_stats = WeatherCalculations() 
         for month in calendar.month_abbr:
-            if month == "":
-                continue
-            self.read_weather_matrix(self.file_path.format(year=year, month=month))
+            if not month == "":
+                self.read_weather_matrix(
+                    self.file_path.format(
+                        year = year, month = month
+                        )
+                    )
         return self.weather_stats

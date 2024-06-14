@@ -20,20 +20,28 @@ class WeatherCalculations:
                                               min_temperature, max_humidity and mean_humidity.
         """
         if not hasattr(self, "num_readings"):
-            self.highest_temperature_record = self.lowest_temperature_record = self.highest_humidity_record = weather_metrics
+            self.highest_temperature_record = weather_metrics
+            self.lowest_temperature_record = weather_metrics
+            self.highest_humidity_record = weather_metrics
             self.total_max_temperature = weather_metrics.max_temperature
             self.total_min_temperature = weather_metrics.min_temperature
             self.total_mean_humidity = weather_metrics.mean_humidity
             self.num_readings = 1
         else:
             self.highest_temperature_record = max(
-                self.highest_temperature_record, weather_metrics, key=lambda x: x.max_temperature
+                self.highest_temperature_record, 
+                weather_metrics, 
+                key=lambda x: x.max_temperature
             )
             self.lowest_temperature_record = min(
-                self.lowest_temperature_record, weather_metrics, key=lambda x: x.min_temperature
+                self.lowest_temperature_record, 
+                weather_metrics, 
+                key=lambda x: x.min_temperature
             )
             self.highest_humidity_record = max(
-                self.highest_humidity_record, weather_metrics, key=lambda x: x.max_humidity
+                self.highest_humidity_record, 
+                weather_metrics, 
+                key=lambda x: x.max_humidity
             )
 
         self.total_max_temperature += weather_metrics.max_temperature

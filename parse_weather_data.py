@@ -50,6 +50,7 @@ class WeatherParser:
             ValueError: If required weather attributes are missing in the header.
         """
         header = [header.strip() for header in next(weather_file)]
+
         alternative_weather_attributes = [
             ("PKT", "PKST"), "Max TemperatureC", "Min TemperatureC", "Max Humidity", "Mean Humidity"
         ]
@@ -93,7 +94,9 @@ class WeatherParser:
         for weather_record in weather_file:
             try:
                 selected_fields = {
-                    self.selected_weather_attributes[key]: weather_record[weather_field_indices[self.selected_weather_attributes[key]]]
+                    self.selected_weather_attributes[key]: weather_record[
+                        weather_field_indices[self.selected_weather_attributes[key]]
+                    ]
                     for key in self.selected_weather_attributes
                 }
             except IndexError:
