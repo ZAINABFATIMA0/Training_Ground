@@ -78,7 +78,7 @@ class QuotesSpider(scrapy.Spider):
         Path(filename).write_bytes(response.body)
         self.log(f"Saved file {filename}")
 
-        collection_urls= response.css('nav.navigation a::attr(href)').getall()
+        collection_urls= response.css("nav.navigation a::attr(href)").getall()
 
         for url in collection_urls:
                 yield scrapy.Request(url = url, callback = self.parse_collection_urls)
@@ -94,13 +94,13 @@ class QuotesSpider(scrapy.Spider):
             response (scrapy.http.Response): 
                 The response object containing the HTML content of a collection page.
         """
-        product_links = response.css('h2.product.name.product-item-name a.product-item-link::attr(href)')
+        product_links = response.css("h2.product.name.product-item-name a.product-item-link::attr(href)")
         product_urls = product_links.getall()
 
         for url in product_urls:
             yield scrapy.Request(url = url, callback = self.parse_product_details_url)
         
-        next_page = response.css('li.item.pages-item-next a.action.next::attr(href)').get()
+        next_page = response.css("li.item.pages-item-next a.action.next::attr(href)").get()
         if next_page:
             yield scrapy.Request(url = next_page, callback = self.parse_collection_urls)
 
@@ -116,12 +116,12 @@ class QuotesSpider(scrapy.Spider):
             dict: A dictionary containing additional product attributes.
         """
         additional_information = {}
-        product_attributes_rows = response.css('table#product-attribute-specs-table tr')
+        product_attributes_rows = response.css("table#product-attribute-specs-table tr")
         for row in product_attributes_rows:
-            label = row.css('th::text').get()
+            label = row.css("th::text").get()
             if not label:
                 continue
-            value = ' '.join(row.css('td *::text').getall()).strip()
+            value = ' '.join(row.css("td *::text").getall()).strip()
             if label and value:
                 additional_information[label] = value
         return additional_information
@@ -138,7 +138,7 @@ class QuotesSpider(scrapy.Spider):
             list: A list of available sizes for the product.
         """
         size = []
-        product_size_script = response.css('script[type="text/x-magento-init"]::text')[8].get()
+        product_size_script = response.css("script[type='text/x-magento-init']::text")[8].get()
         
         try:
             productsize = json.loads(product_size_script)
@@ -146,13 +146,13 @@ class QuotesSpider(scrapy.Spider):
             self.logger.error(f"Failed to decode JSON: {e}")
             return
         
-        swatch_options = productsize.get('[data-role=swatch-options]', {})
-        size_data = swatch_options.get('Magento_Swatches/js/swatch-renderer', {}).get('jsonSwatchConfig', {})
+        swatch_options = productsize.get("[data-role=swatch-options]", {})
+        size_data = swatch_options.get("Magento_Swatches/js/swatch-renderer", {}).get("jsonSwatchConfig", {})
 
         for attribute_id, attribute_data in size_data.items():
             for size_option_id, size_option_data in attribute_data.items():
                 if isinstance(size_option_data, dict):
-                    label = size_option_data.get('label')
+                    label = size_option_data.get("label")
                     if label:
                         size.append(label)
                 else:
@@ -172,22 +172,22 @@ class QuotesSpider(scrapy.Spider):
         Yields:
             dict: A dictionary containing detailed information about the product.
         """
-        product_name = response.css('h1.page-title span.base::text').get()
-        sku = response.css('div.product.attribute.sku div.value::text').get()
-        price = response.css('span.price::text').get()
-        description_text = response.css('div.product.attribute.overview div.value *::text').getall()
-        image_links = response.css('[id^="MagicToolboxSelectors"] a::attr(href)').getall()
-        details_text = response.css('div.product.attribute.description div.value *::text').getall()
+        product_name = response.css("h1.page-title span.base::text").get()
+        sku = response.css("div.product.attribute.sku div.value::text").get()
+        price = response.css("span.price::text").get()
+        description_text = response.css("div.product.attribute.overview div.value *::text").getall()
+        image_links = response.css("[id^='MagicToolboxSelectors'] a::attr(href)").getall()
+        details_text = response.css("div.product.attribute.description div.value *::text").getall()
         additional_information = self.parse_additional_information(response)
         sizes = self.parse_sizes(response)
 
         yield {
-            'product_name': product_name,
-            'sku': sku,           
-            'price': price,
-            'Size/Shades': sizes,
-            'description': description_text,
-            'details': details_text,
-            'additional_attributes': additional_information,
-            'Images_URL': image_links,
+            "product_name" : product_name,
+            "sku": sku,           
+            "price": price,
+            "Size/Shades": sizes,
+            "description": description_text,
+            "details": details_text,
+            "additional_attributes": additional_information,
+            "Images_URL": image_links,
         }
