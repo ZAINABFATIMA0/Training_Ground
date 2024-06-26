@@ -1,14 +1,28 @@
 import json
-from pathlib import Path
 
 import scrapy
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
 
-
-class QuotesSpider(scrapy.Spider):
+class J_Product_Spider(CrawlSpider):
     """
     A Scrapy spider for scraping product information from the Junaid Jamshed website.
     """
     name = "J_Scrapper"
+    allowed_domains = ['junaidjamshed.com']
+    start_urls = ['https://www.junaidjamshed.com']
+
+    rules = (
+        Rule(
+            LinkExtractor(restrict_css = 'li.item.pages-item-next a.action.next'), 
+            follow = True
+        ),
+        Rule(
+            LinkExtractor(restrict_css = 'a.product-item-link'),
+            callback = 'parse_product_details_url', 
+            follow = True
+        ),
+    )
 
     def start_requests(self):
         """
@@ -16,51 +30,10 @@ class QuotesSpider(scrapy.Spider):
 
         The method also sets the cookies necessary for the session.
         """
-        urls = [
-            "https://www.junaidjamshed.com/",
-        ]
         cookies = {
-            "PHPSESSID": "fbdda54e23e810eb694fd47ec674226b",
-            "wp_ga4_customerGroup": "NOT LOGGED IN",
-            "wp_customerGroup": "NOT LOGGED IN",
-            "form_key": "kCzQghewDdVFupEB",
-            "mage-cache-sessid": "true",
-            "_fbp": "fb.1.1719225566466.690616671166363123",
-            "mage-messages": "",
-            "_gcl_au": "1.1.1846065812.1719225567",
-            "__adroll_fpc": "224d841f0b458e7c0dc56b05944ce64b-1719225567487",
-            "_hjSession_1369653": "eyJpZCI6ImU5ZjU5YmNkLTdmYTUtNDE0NC04YzA4LTVhZjZjNTIzOTA0MCIsImMiOjE3MTkyMjU1Njc1MjAsInMiOjAsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjoxLCJzcCI6MH0=",
-            "_tt_enable_cookie": "1",
-            "_ttp": "CCrOmtFbWsDsKwXqtd3e0DMADnr",
             "countrycurrency": "PKR",
-            "_hjSessionUser_1369653": "eyJpZCI6IjgzNjZkNjYxLTMyMmItNWFkNi1hZGFlLTIyNzE4Y2I3M2E1MyIsImNyZWF0ZWQiOjE3MTkyMjU1Njc1MjAsImV4aXN0aW5nIjp0cnVlfQ==",
-            "section_data_ids": "{\"apptrian_tiktok_pixel_matching_section\":1719228197}",
-            "private_content_version": "0975d28e1ab7534c2633b7b25b432102",
-            "_tracking_consent": "{\"con\":{\"CMP\":{\"a\":\"\",\"m\":\"\",\"p\":\"\",\"s\":\"\"}},\"v\":\"2.1\",\"region\":\"PKPB\",\"reg\":\"\"}",
-            "_cmp_a": "{\"purposes\":{\"a\":true,\"p\":true,\"m\":true,\"t\":true},\"display_banner\":false,\"sale_of_data_region\":false}",
-            "_shopify_y": "bf79f283-06f8-4f85-b738-c8650e6119f5",
-            "_orig_referrer": "https://www.junaidjamshed.com/",
-            "_landing_page": "/",
-            "_gid": "GA1.2.918343573.1719228933",
-            "_shopify_sa_p": "",
-            "_shopify_s": "01300662-da43-4d7b-b05f-791226c38888",
-            "_shopify_sa_t": "2024-06-24T11:42:22.407Z",
-            "_ga_D479ZMQWWW": "GS1.1.1719228933.1.1.1719229345.0.0.0",
-            "mage-cache-storage": "{}",
-            "mage-cache-storage-section-invalidation": "{}",
-            "mage-banners-cache-storage": "{}",
-            "recently_viewed_product": "{}",
-            "product_data_storage": "{}",
-            "recently_viewed_product_previous": "{}",
-            "recently_compared_product": "{}",
-            "recently_compared_product_previous": "{}",
-            "_ga_NZV9RQSHHH": "GS1.2.1719229026.1.1.1719230248.0.0.0",
-            "_ga": "GA1.1.1930631762.1719225567",
-            "_ga_4NJNWKXG24": "GS1.1.1719227994.2.1.1719230352.60.0.0",
-            "__ar_v4": "PHMQTLHYCREY7AZLBUMNJN:20240624:26|K4IO2OKJYVC5PHCOV7ZLLE:20240624:26"
         }
-        
-        for url in urls:
+        for url in self.start_urls:
             yield scrapy.Request(url = url, callback = self.parse_root_url, cookies = cookies)
 
     def parse_root_url(self, response):
@@ -73,36 +46,9 @@ class QuotesSpider(scrapy.Spider):
             response (scrapy.http.Response): 
                 The response object containing the HTML content of the root URL.
         """
-        page = response.url.split("/")[-2]
-        filename = f"{page}.html"
-        Path(filename).write_bytes(response.body)
-        self.log(f"Saved file {filename}")
-
-        collection_urls= response.css("nav.navigation a::attr(href)").getall()
-
-        for url in collection_urls:
-                yield scrapy.Request(url = url, callback = self.parse_collection_urls)
-            
-
-    def parse_collection_urls(self, response):     
-        """
-        Parses collection URLs and extracts product URLs.
-
-        Follows pagination links to navigate through all collection pages.
-
-        Args:
-            response (scrapy.http.Response): 
-                The response object containing the HTML content of a collection page.
-        """
-        product_links = response.css("h2.product.name.product-item-name a.product-item-link::attr(href)")
-        product_urls = product_links.getall()
-
-        for url in product_urls:
-            yield scrapy.Request(url = url, callback = self.parse_product_details_url)
-        
-        next_page = response.css("li.item.pages-item-next a.action.next::attr(href)").get()
-        if next_page:
-            yield scrapy.Request(url = next_page, callback = self.parse_collection_urls)
+        product_category_urls = response.css("nav.navigation a::attr(href)").getall()
+        for url in product_category_urls:
+            yield scrapy.Request(url = url)
 
     def parse_additional_information(self, response):
         """
@@ -115,16 +61,12 @@ class QuotesSpider(scrapy.Spider):
         Returns:
             dict: A dictionary containing additional product attributes.
         """
-        additional_information = {}
-        product_attributes_rows = response.css("table#product-attribute-specs-table tr")
-        for row in product_attributes_rows:
-            label = row.css("th::text").get()
-            if not label:
-                continue
-            value = ' '.join(row.css("td *::text").getall()).strip()
-            if label and value:
-                additional_information[label] = value
-        return additional_information
+        all_product_attributes = response.css("table#product-attribute-specs-table tr")
+        additional_information = {
+            single_attribute.css("th::text").get(): ' '.join(single_attribute.css("td *::text").getall()).strip()
+            for single_attribute in all_product_attributes if single_attribute.css("th::text").get()
+        }
+        return(additional_information)
 
     def parse_sizes(self, response):
         """
@@ -137,28 +79,38 @@ class QuotesSpider(scrapy.Spider):
         Returns:
             list: A list of available sizes for the product.
         """
-        size = []
-        product_size_script = response.css("script[type='text/x-magento-init']::text")[8].get()
-        
+        sizes = []
+        product_size_data = None
+        product_size = response.css("script[type = 'text/x-magento-init']::text").getall()
+
+        for text in product_size:
+            if '"Magento_Swatches/js/swatch-renderer"' in text:
+                product_size_data = text
+                break
+
+        if not product_size_data:
+            self.logger.error("Could not find the product size script.")
+            return sizes
+
         try:
-            productsize = json.loads(product_size_script)
+            productsize = json.loads(product_size_data)
         except json.JSONDecodeError as e:
             self.logger.error(f"Failed to decode JSON: {e}")
             return
-        
-        swatch_options = productsize.get("[data-role=swatch-options]", {})
-        size_data = swatch_options.get("Magento_Swatches/js/swatch-renderer", {}).get("jsonSwatchConfig", {})
 
-        for attribute_id, attribute_data in size_data.items():
-            for size_option_id, size_option_data in attribute_data.items():
-                if isinstance(size_option_data, dict):
-                    label = size_option_data.get("label")
-                    if label:
-                        size.append(label)
+        available_sizes_data = productsize.get("[data-role = swatch-options]", {})
+        available_sizes = available_sizes_data.get("Magento_Swatches/js/swatch-renderer", {}).get("jsonSwatchConfig", {})
+
+        for attribute_id, attribute_value in available_sizes.items():
+            for size_option_id, size_option_value in attribute_value.items():
+                if isinstance(size_option_value, dict):
+                    size_label = size_option_value.get("label")
+                    if size_label:
+                        sizes.append(size_label)
                 else:
-                    self.logger.warning(f"Unexpected data type for option_data: {size_option_data}")
-        return size
-    
+                    self.logger.warning(f"Unexpected data type for option_data: {size_option_value}")
+        return sizes
+
     def parse_product_details_url(self, response):
         """
         Extracts detailed information about a product from a product detail page.
@@ -175,19 +127,19 @@ class QuotesSpider(scrapy.Spider):
         product_name = response.css("h1.page-title span.base::text").get()
         sku = response.css("div.product.attribute.sku div.value::text").get()
         price = response.css("span.price::text").get()
-        description_text = response.css("div.product.attribute.overview div.value *::text").getall()
+        description = response.css("div.product.attribute.overview div.value *::text").getall()
         image_links = response.css("[id^='MagicToolboxSelectors'] a::attr(href)").getall()
-        details_text = response.css("div.product.attribute.description div.value *::text").getall()
+        details = response.css("div.product.attribute.description div.value *::text").getall()
         additional_information = self.parse_additional_information(response)
         sizes = self.parse_sizes(response)
 
         yield {
-            "product_name" : product_name,
-            "sku": sku,           
+            "product_name": product_name,
+            "sku": sku,
             "price": price,
             "Size/Shades": sizes,
-            "description": description_text,
-            "details": details_text,
+            "description": description,
+            "details": details,
             "additional_attributes": additional_information,
             "Images_URL": image_links,
         }
