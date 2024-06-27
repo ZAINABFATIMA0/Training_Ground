@@ -1,8 +1,9 @@
 import json
 
 import scrapy
-from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider, Rule
+
 
 class J_Product_Spider(CrawlSpider):
     """
