@@ -48,10 +48,10 @@
                 <p>Duppata: {{ detail.duppata }}</p>
                 {% endfor %}
             </div>
-            <div class="additional-attributes">
+            <div class="attributes">
                 <h2>More Information</h2>
                 <ul>
-                    {% for attribute in product.additional_attributes.all %}
+                    {% for attribute in product.attributes.all %}
                     <li>Color: {{ attribute.color }}</li>
                     <li>Fabric Type: {{ attribute.fabric }}</li>
                     <li>Disclaimer: {{ attribute.disclaimer }}</li>

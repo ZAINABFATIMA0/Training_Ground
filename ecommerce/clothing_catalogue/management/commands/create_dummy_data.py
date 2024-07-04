@@ -1,39 +1,19 @@
 from django.core.management.base import BaseCommand
-from faker import Faker
 
-from ...models import Product, Image, Details, Additional_attributes
+from ...factories import ProductFactory, ImageFactory, DetailsFactory, AttributesFactory
 
 
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
-        fake = Faker()
-
         for _ in range(100):
-            product = Product.objects.create(
-                name=fake.word(),
-                sku=fake.random_number(digits=5),
-                price=fake.random_number(digits=4)
-            )
+            product_object = ProductFactory()
 
-            for _ in range(3): 
-                Image.objects.create(
-                    product=product,
-                    image_url=fake.image_url()
-                )
+            for _ in range(3):
+                ImageFactory(product=product_object)
 
-            Details.objects.create(
-                product=product,
-                shirt=fake.text(),
-                trouser=fake.text(),
-                duppata=fake.text()
-            )
-
-            Additional_attributes.objects.create(
-                product=product,
-                color=fake.color_name(),
-                fabric=fake.word(),
-                disclaimer=fake.sentence()
-            )
+            DetailsFactory(product=product_object)
+            
+            AttributesFactory(product=product_object)
 
         self.stdout.write(self.style.SUCCESS('Dummy data created successfully!'))

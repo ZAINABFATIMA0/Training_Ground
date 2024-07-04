@@ -19,7 +19,7 @@
             <div class="product-info">
                 <div>
                     <p>{{ product.name }}</p>
-                    <p><b>Price :</b> Rs{{ product.price }}</p>
+                    <p><b>Price:</b> Rs {{ product.price }}</p>
                 </div>
                 <div class="add-to-bag">
                     <form action="{% url 'product_detail' product.id %}" method="get">

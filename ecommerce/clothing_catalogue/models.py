@@ -26,14 +26,14 @@ class Details(models.Model):
         Product, related_name='details', on_delete=models.CASCADE
         )
     
-    shirt = models.TextField(default=None)
-    trouser = models.TextField(default=None)
-    duppata = models.TextField(default=None)
+    shirt = models.TextField(blank=True, null=True)
+    trouser = models.TextField(blank=True, null=True)
+    duppata = models.TextField(blank=True, null=True)
 
 
-class Additional_attributes(models.Model):
+class Attributes(models.Model):
     product = models.ForeignKey(
-        Product, related_name='additional_attributes', on_delete=models.CASCADE
+        Product, related_name='attributes', on_delete=models.CASCADE
         )
     
     color = models.CharField(max_length=50)
