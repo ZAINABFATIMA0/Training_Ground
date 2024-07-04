@@ -1,0 +1,70 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'clothing_catalogue/product_detail_style.css' %}">
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }}</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="image-section">
+            <div class="main-image">
+                <img id="main-image" 
+                    src="{{ product.images.first.image_url }}" 
+                    alt="{{ product.name }}" 
+                    width="100%">
+            </div>
+            <div class="thumbnails">
+                {% for image in product.images.all %}
+                <img src="{{ image.image_url }}" alt="{{ product.name }}"
+                    onclick="changeImage('{{ image.image_url }}')">
+                {% endfor %}
+            </div>
+        </div>
+        <div class="product-details">
+            <h1>{{ product.name }}</h1>
+            <p>Price:Rs {{ product.price }}</p>
+            <p>SKU: {{ product.sku }}</p>
+
+            <div class="sizes">
+                <span>Size:</span>
+                <button>XS</button>
+                <button>S</button>
+                <button>M</button>
+                <button>L</button>
+                <button>XL</button>
+            </div>
+
+            <button>Add to Bag</button>
+            <div class="details">
+                <h2>Details</h2>
+                {% for detail in product.details.all %}
+                <p>Shirt: {{ detail.shirt }}</p>
+                <p>Trouser: {{ detail.trouser }}</p>
+                <p>Duppata: {{ detail.duppata }}</p>
+                {% endfor %}
+            </div>
+            <div class="additional-attributes">
+                <h2>More Information</h2>
+                <ul>
+                    {% for attribute in product.additional_attributes.all %}
+                    <li>Color: {{ attribute.color }}</li>
+                    <li>Fabric Type: {{ attribute.fabric }}</li>
+                    <li>Disclaimer: {{ attribute.disclaimer }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        function changeImage(url) {
+            document.getElementById('main-image').src = url;
+        }
+    </script>
+</body>
+
+</html>
